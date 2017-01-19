@@ -4,6 +4,8 @@ import os
 import math
 import sys
 import cv2
+#from imageInMem import im
+import numpy as np
 
 class VisionTargeting(object):
 
@@ -25,7 +27,7 @@ class VisionTargeting(object):
 		display = Display()
 		#cam = Camera() # UNCOMMENT TO ACTIVATE LIVE CAMERA
 		
-		img = Image('%s' % self.image)
+		img = cv2.imread('test.JPG') #Image('%s' % self.image)
 
 		#CUSTOM COLOR CONSTANTS
 
@@ -47,7 +49,7 @@ class VisionTargeting(object):
 		global img
 		global MINVALUE
 		
-		img = img.scale(500,500)
+		#img = img.scale(500,500)
 		#img = img.dilate()
 		#img = img.erode()
 		speed = self.speed
@@ -55,10 +57,20 @@ class VisionTargeting(object):
 
 		while display.isNotDone(): # Breaks loop if SimpleCV gui is exited
 			#img = cam.getImage();					# UNCOMMENT TO ACTIVATE LIVE CAMERA
+
+			hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+			lower_green = np.array([85,100,250])
+			upper_green = np.array([95,200,255])
+			mask = cv2.inRange(hsv, lower_green, upper_green)
+			res = cv2.bitwise_and(img,img,mask=mask)
+
+			img = Image(res)
+			green_target = img
+			green_target = green_target.scale(500,500)
 			img_center = (img.width/2, img.height/2)
 
-			only_green = img.hueDistance(CUSTGREEN_LIST, self.MINSATURATION, self.MINVALUE) # Settings adjustable for best results -- RGB Color System
-			green_target = img - only_green
+			#only_green = img.hueDistance(CUSTGREEN_LIST, self.MINSATURATION, self.MINVALUE) # Settings adjustable for best results -- RGB Color System
+			#green_target = img - only_green
 
 			try:	# If blobs are not found... program does not crash...prints "No target found" 
 
@@ -169,10 +181,7 @@ class VisionTargeting(object):
 			except Exception as e:
 				print e
 				print 'NoneType Error = No Blob found --- Else refer above'
-				break
-				#self.MINVALUE -= 100
-				#if self.MINVALUE < 0:
-					#print 'No blob officially found, MINVALUE = %s' %self.MINVALUE
+				return '*008*Angle*%s*Distance*%s*' %(0,0)
 
 			
 	
@@ -182,9 +191,9 @@ class VisionTargeting(object):
 			green_target.show()
 			#print 'saved!'
 			time.sleep(speed) # Decrease Values for a smoother image rendering + faster CON - Heavy load on CPU 
-			print 'Loop Successful'
+			print 'Loop Ran'
 			
-			#return '008*Angle*%s*Distance*%s*' % (angle_Tangent, self.ultraSonic_Dist2) 
+			return '008*Angle*%s*Distance*%s*' % (angle_Tangent, self.ultraSonic_Dist2) 
 			
 			#if count >= 3:							# Deletes the image after 2 saves Ex. Deletes Output 5 after Output 6 and Output 7 are Created
 				#var = 'Output%s.png' %new_count
@@ -211,7 +220,15 @@ class VisionTargeting(object):
 
 
 if __name__ == "__main__":
-	VisionTargeting = VisionTargeting(0.1, 'test.JPG')
-	VisionTargeting.setMinSaturation(100)
-	VisionTargeting.setMinValue(220)
-	VisionTargeting.Loop()
+	VisionTargeting1 = VisionTargeting(0.1, 'test.JPG')
+	VisionTargeting1.setMinSaturation(100)
+	VisionTargeting1.setMinValue(220)
+	print VisionTargeting1.Loop()
+
+
+
+
+
+		
+
+	
