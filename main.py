@@ -9,7 +9,7 @@ import numpy as np
 
 class VisionTargeting(object):
 
-	def __init__(self, speed = 0.1, image = ''):
+	def __init__(self, speed = 0.1):
 
 		global display
 		global count
@@ -21,7 +21,6 @@ class VisionTargeting(object):
 		global MINVALUE
 		
 		self.speed = speed
-		self.image = image
 
 		#cam = Camera(prop_set={"width":300,"height":300}) # Added to avid SimpleCB buffer error console spam
 		display = Display()
@@ -55,9 +54,11 @@ class VisionTargeting(object):
 		speed = self.speed
 		print 'Loop Started'
 
+		global imgorig
+		imgorig = img
 		while display.isNotDone(): # Breaks loop if SimpleCV gui is exited
 			#img = cam.getImage();					# UNCOMMENT TO ACTIVATE LIVE CAMERA
-
+			img = imgorig
 			hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 			lower_green = np.array([85,100,250])
 			upper_green = np.array([95,200,255])
@@ -193,7 +194,7 @@ class VisionTargeting(object):
 			time.sleep(speed) # Decrease Values for a smoother image rendering + faster CON - Heavy load on CPU 
 			print 'Loop Ran'
 			
-			return '008*Angle*%s*Distance*%s*' % (angle_Tangent, self.ultraSonic_Dist2) 
+			#return '008*Angle*%s*Distance*%s*' % (angle_Tangent, self.ultraSonic_Dist2) 
 			
 			#if count >= 3:							# Deletes the image after 2 saves Ex. Deletes Output 5 after Output 6 and Output 7 are Created
 				#var = 'Output%s.png' %new_count
@@ -202,27 +203,8 @@ class VisionTargeting(object):
 				#new_count += 1
 
 
-
-	def setMinSaturation(self, value):
-		self.value = value
-		self.MINSATURATION = self.value
-	def setMinValue(self, value):
-		self.value = value
-		self.MINVALUE = self.value
-	def getMinValue(self):
-		return self.MINVALUE
-	def getMinSaturation(self):
-		return self.getMinSaturation
-	def getDistanceSmallBlob(self):
-		return self.ultraSonic_Dist2
-	def getDistanceLargeBlob(self):
-		return self.ultraSonic_Dist
-
-
 if __name__ == "__main__":
-	VisionTargeting1 = VisionTargeting(0.1, 'test.JPG')
-	VisionTargeting1.setMinSaturation(100)
-	VisionTargeting1.setMinValue(220)
+	VisionTargeting1 = VisionTargeting(0.1)
 	print VisionTargeting1.Loop()
 
 
