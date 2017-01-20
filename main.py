@@ -20,44 +20,28 @@ class VisionTargeting(object):
 		global img
 		global MINVALUE
 		
-		self.speed = speed
-
-		#cam = Camera(prop_set={"width":300,"height":300}) # Added to avid SimpleCB buffer error console spam
 		display = Display()
-		#cam = Camera() # UNCOMMENT TO ACTIVATE LIVE CAMERA
-		
 		img = cv2.imread('test.JPG') #Image('%s' % self.image)
 
 		#CUSTOM COLOR CONSTANTS
-
-		CUSTOM_GREEN = (52,134,60)
-		CUSTGREEN_LIST = list(CUSTOM_GREEN)
 		
 		self.ultraSonic_Dist= 0 
 		self.ultraSonic_Dist2 = 0
 		self.text_FontSize = 15
-		self.MINSATURATION = 50
-		self.MINVALUE = 220
+		self.speed = speed
 
 	
 	def Loop(self):
-
-		global count
-		global MINSATURATION
 		global text_FontSize
 		global img
-		global MINVALUE
-		
-		#img = img.scale(500,500)
-		#img = img.dilate()
-		#img = img.erode()
 		speed = self.speed
 		print 'Loop Started'
 
 		global imgorig
 		imgorig = img
+
 		while display.isNotDone(): # Breaks loop if SimpleCV gui is exited
-			#img = cam.getImage();					# UNCOMMENT TO ACTIVATE LIVE CAMERA
+
 			img = imgorig
 			hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 			lower_green = np.array([85,100,250])
@@ -67,16 +51,14 @@ class VisionTargeting(object):
 
 			img = Image(res)
 			green_target = img
+			green_target = green_target.rotate(-90)
+			green_target = green_target.flipHorizontal()
 			green_target = green_target.scale(500,500)
-			img_center = (img.width/2, img.height/2)
-
-			#only_green = img.hueDistance(CUSTGREEN_LIST, self.MINSATURATION, self.MINVALUE) # Settings adjustable for best results -- RGB Color System
-			#green_target = img - only_green
+			img_center = (green_target.width/2, green_target.height/2)
 
 			try:	# If blobs are not found... program does not crash...prints "No target found" 
 
 				blobs = green_target.findBlobs()
-					#Drwas bounding box at largest blob
 
 				## BLOB IDENTIFICATION + ASSIGNMENT
 
@@ -157,7 +139,9 @@ class VisionTargeting(object):
 				angle_Tangent = math.degrees(angle_Tangent)
 				angle_Tangent = round(angle_Tangent, 2)
 
-				if (img.width/2) > x_center:
+				
+
+				if (250) > x_center:
 					angle_Tangent -= (angle_Tangent * 2)
 
 
@@ -184,10 +168,6 @@ class VisionTargeting(object):
 				print 'NoneType Error = No Blob found --- Else refer above'
 				return '*008*Angle*%s*Distance*%s*' %(0,0)
 
-			
-	
-
-			#green_target.save('Output%s.png' %count)  #Saves the image with a new name everytime
 			green_target.save('Output.png') # Overwriting save if loop is commented
 			green_target.show()
 			#print 'saved!'
@@ -195,12 +175,6 @@ class VisionTargeting(object):
 			print 'Loop Ran'
 			
 			#return '008*Angle*%s*Distance*%s*' % (angle_Tangent, self.ultraSonic_Dist2) 
-			
-			#if count >= 3:							# Deletes the image after 2 saves Ex. Deletes Output 5 after Output 6 and Output 7 are Created
-				#var = 'Output%s.png' %new_count
-				#os.remove(var)
-				#print 'removed!'d
-				#new_count += 1
 
 
 if __name__ == "__main__":
