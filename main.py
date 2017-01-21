@@ -21,7 +21,7 @@ class VisionTargeting(object):
 		global MINVALUE
 		
 		display = Display()
-		img = cv2.imread('test.JPG') #Image('%s' % self.image)
+		img = cv2.imread('image1.jpg') #Image('%s' % self.image)
 
 		#CUSTOM COLOR CONSTANTS
 		
@@ -44,8 +44,8 @@ class VisionTargeting(object):
 
 			img = imgorig
 			hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-			lower_green = np.array([85,100,250])
-			upper_green = np.array([95,200,255])
+			lower_green = np.array([70,150,20])
+			upper_green = np.array([95,255,60])
 			mask = cv2.inRange(hsv, lower_green, upper_green)
 			res = cv2.bitwise_and(img,img,mask=mask)
 
@@ -120,6 +120,8 @@ class VisionTargeting(object):
 				y_center += tlc_List[1]
 				target_center = (x_center, y_center)
 
+				print y_center
+
 				if tlc_List[0] < trc_List2[0]:
 					x_center = (brc_List[0] - blc_List2[0]) / 2
 					x_center += blc_List2[0]
@@ -131,15 +133,15 @@ class VisionTargeting(object):
 				blob_center = (blobs[-1].minRectX(), blobs[-1].minRectY())
 				blob_center2 = (blobs[-2].minRectX(), blobs[-2].minRectY())       # Identify center of bounding box
 
-				angle_OppSide = 250 - y_center
-				angle_AdjSide = x_center - 250
+				angle_OppSide = abs(250 - x_center)
+				angle_AdjSide = abs(250 - y_center)
 				angle_Tangent = float(angle_OppSide)/float(angle_AdjSide)
 				angle_Tangent =  math.tan(angle_Tangent)
 				angle_Tangent = math.atan(angle_Tangent)
 				angle_Tangent = math.degrees(angle_Tangent)
 				angle_Tangent = round(angle_Tangent, 2)
 
-				
+				print angle_AdjSide
 
 				if (250) > x_center:
 					angle_Tangent -= (angle_Tangent * 2)
@@ -151,15 +153,15 @@ class VisionTargeting(object):
 				green_target.dl().circle((blob_center), 4, color = Color.BLUE)  # Bounding BOX Center Circle - BLUE
 				green_target.dl().circle((blob_center2), 4, color = Color.BLUE)  # Bounding BOX Center Circle - BLUE
 				green_target.dl().circle((img_center), 2, color = Color.YELLOW) # Image Center Circle - YELLOW
-				green_target.drawText(text = str(self.ultraSonic_Dist) + " ft", x = tlc_List[0], y = adjusted_y, color = Color.WHITE, fontsize = self.text_FontSize) #Draws distance text for biggest blob
-				green_target.drawText(text = str(self.ultraSonic_Dist2) + " ft", x = tlc_List2[0], y = adjusted2_y, color = Color.WHITE, fontsize = self.text_FontSize) #Draws distance text for second small blob
+				#green_target.drawText(text = str(self.ultraSonic_Dist) + " ft", x = tlc_List[0], y = adjusted_y, color = Color.WHITE, fontsize = self.text_FontSize) #Draws distance text for biggest blob
+				#green_target.drawText(text = str(self.ultraSonic_Dist2) + " ft", x = tlc_List2[0], y = adjusted2_y, color = Color.WHITE, fontsize = self.text_FontSize) #Draws distance text for second small blob
 				green_target.dl().circle((target_center), 3, color = Color.RED) #Draws a circle at center of 2 targets, represents peg location
 				green_target.dl().line((target_center), (img_center), color = Color.RED, width = 1) # Draws the hypotenuse
 				#green_target.dl().line((0,250), (500,250), color = Color.WHITE, width = 1) # Draws x axis
 				#green_target.dl().line((250,0), (250, 500), color = Color.WHITE, width = 1) # Draws y axis
 				green_target.dl().line((target_center), (x_center, 250), color = Color.RED, width = 1) # Opposite Side
 				green_target.dl().line((x_center, 250), (250,250), color = Color.RED, width = 1) # Adjacent Side
-				green_target.drawText(text = str(angle_Tangent) + " deg", x = 255, y = 250, color = Color.WHITE, fontsize = self.text_FontSize)
+				green_target.drawText(text = str(angle_Tangent) + "", x = 255, y = 250, color = Color.WHITE, fontsize = self.text_FontSize)
 
 				
 
